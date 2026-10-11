@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techno Sepetim - Teknoloji & Giyim</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#FFF7D6',
+                            300: '#FFE57F',
+                            400: '#FFD700',
+                            500: '#D4AF37',
+                            600: '#AA882A',
+                        },
+                        darkbg: '#070709',
+                        cardbg: '#121216'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkbg text-gray-100 min-h-screen font-sans flex flex-col justify-between selection:bg-gold-500 selection:text-black">
+
+    <!-- BİLDİRİM BALONU (TOAST) -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-gradient-to-r from-gold-400 to-gold-500 text-black px-6 py-3.5 rounded-2xl font-bold shadow-2xl flex items-center gap-3 text-sm border border-gold-300">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toastMessage">İşlem başarılı!</span>
+    </div>
+
+    <!-- ÜST MENÜ (HEADER) -->
+    <header class="sticky top-0 z-40 bg-[#0A0A0E]/90 backdrop-blur-xl border-b border-gold-500/20 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- LOGO -->
+            <a href="#" class="flex items-center gap-3 group">
+                <img src="logo.png" alt="Techno Sepetim Logo" class="h-12 w-auto object-contain rounded-full border border-gold-500/40 group-hover:scale-105 transition-transform" onerror="this.src='https://via.placeholder.com/150x50/121216/FFD700?text=TechnoSepetim'">
+            </a>
+
+            <!-- ARAMA ÇUBUĞU -->
+            <div class="flex-1 max-w-md hidden md:block">
+                <div class="relative">
+                    <input type="text" id="searchInput" oninput="filterProducts(this.value)" placeholder="Mağazada teknoloji veya giyim ürünü ara..." 
+                        class="w-full bg-darkbg border border-gray-800 rounded-xl px-4 py-2.5 pl-10 text-xs text-gray-200 focus:outline-none focus:border-gold-400 transition-all shadow-inner">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- NAV LİNKLERİ -->
+            <nav class="hidden lg:flex items-center gap-7 text-xs font-semibold text-gray-300 tracking-wide">
+                <a href="#urunler" class="hover:text-gold-400 transition-colors">Ürünler</a>
+                <a href="#neden-biz" class="hover:text-gold-400 transition-colors">Neden Biz?</a>
+                <a href="#yorumlar" class="hover:text-gold-400 transition-colors">Yorumlar</a>
+                <a href="#sss" class="hover:text-gold-400 transition-colors">S.S.S</a>
+            </nav>
+
+            <!-- SAĞ AKSİYONLAR -->
+            <div class="flex items-center gap-2.5">
+                <a href="https://dolap.com/profil/technosepetim" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold px-3.5 py-2 rounded-xl text-xs transition-all shadow-md shadow-gold-500/10">
+                    <i class="fa-solid fa-bag-shopping"></i> Dolap
+                </a>
+                <a href="https://www.gardrops.com/technosepetim" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 bg-[#1A1A22] hover:bg-[#22222C] text-gold-400 border border-gold-500/30 font-extrabold px-3.5 py-2 rounded-xl text-xs transition-all">
+                    <i class="fa-solid fa-store"></i> Gardrops
+                </a>
+                
+                <!-- Admin Butonu -->
+                <button onclick="openAdminAuth()" class="bg-cardbg border border-gold-500/40 text-gold-400 hover:bg-gold-500 hover:text-black font-bold px-3 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-sm" title="Admin Paneli">
+                    <i class="fa-solid fa-lock-keyhole"></i> <span class="hidden sm:inline">Admin</span>
+                </button>
+
+                <!-- Sepet Butonu -->
+                <button onclick="toggleCartDrawer()" class="relative bg-gold-400 hover:bg-gold-300 text-black font-extrabold px-3.5 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-lg shadow-gold-400/10">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="hidden md:inline">Sepet</span>
+                    <span id="cartBadge" class="bg-red-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNER ALANI -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
+        <div class="w-full rounded-3xl overflow-hidden border border-gold-500/30 bg-cardbg shadow-2xl relative group">
+            <div class="absolute inset-0 bg-gradient-to-t from-darkbg/40 via-transparent to-transparent pointer-events-none"></div>
+            <img src="banner.png" alt="Techno Sepetim Banner" class="w-full h-48 sm:h-72 md:h-88 object-cover group-hover:scale-101 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/1200x350/121216/FFD700?text=Techno+Sepetim+Banner'">
+        </div>
+    </section>
+
+    <!-- ANA İÇERİK (MAIN) -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-20">
+
+        <!-- 1. VİTRİN ÜRÜNLERİ -->
+        <section id="urunler" class="space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-800/80 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white flex items-center gap-2.5">
+                        <i class="fa-solid fa-fire text-gold-400"></i> Vitrin Ürünlerimiz
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Teknoloji ve Giyim Fırsatları (<span id="productCount" class="text-gold-400 font-bold">0</span> Ürün Listeleniyor)</p>
+                </div>
+                <!-- Mobil Arama -->
+                <div class="w-full sm:w-64 md:hidden">
+                    <input type="text" oninput="filterProducts(this.value)" placeholder="Ürün ara..." class="w-full bg-cardbg border border-gray-800 rounded-xl px-3 py-2 text-xs text-white">
+                </div>
+            </div>
+
+            <!-- Ürün Grid Alanı -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+
+            <!-- Boş Durum -->
+            <div id="emptyState" class="hidden text-center py-20 bg-cardbg/40 rounded-3xl border border-gray-800/80 backdrop-blur-sm">
+                <i class="fa-solid fa-box-open text-6xl text-gold-500/30 mb-4 animate-bounce"></i>
+                <h3 class="text-lg font-bold text-gray-200">Vitrin Henüz Boş</h3>
+                <p class="text-xs text-gray-400 mt-1 max-w-sm mx-auto">Kendi ürünlerini eklemek için sağ üstteki <strong class="text-gold-400">Admin</strong> butonuna tıklayarak yönetim paneline giriş yapabilirsin.</p>
+            </div>
+        </section>
+
+        <!-- 2. NEDEN BİZİ TERCİH ETMELİSİNİZ? (GÜVENCE) -->
+        <section id="neden-biz" class="bg-gradient-to-b from-cardbg to-[#0D0D10] border border-gold-500/20 rounded-3xl p-8 md:p-12 space-y-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-32 -right-32 w-80 h-80 bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="text-center space-y-3 relative z-10">
+                <span class="px-4 py-1.5 bg-gold-500/10 border border-gold-500/30 text-gold-400 rounded-full text-xs font-bold tracking-widest uppercase">Güvenli Alışveriş Deneyimi</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Neden Techno Sepetim?</h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">Müşteri memnuniyetini en üst düzeyde tutarak, her alışverişinizde kusursuz hizmet sunuyoruz.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                <div class="bg-darkbg/80 backdrop-blur p-6 rounded-2xl border border-gray-800 hover:border-gold-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-microchip"></i></div>
+                    <h3 class="font-bold text-white text-base mb-1.5">Test Edilmiş Ürünler</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Tüm donanım ve teknoloji ürünlerimiz paketlenmeden önce özenle test edilir.</p>
+                </div>
+                <div class="bg-darkbg/80 backdrop-blur p-6 rounded-2xl border border-gray-800 hover:border-gold-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-gift"></i></div>
+                    <h3 class="font-bold text-white text-base mb-1.5">Hediyeli Paketleme</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Siparişlerinize özel tatlı ikramlar ve korunaklı ambalajlar eşlik eder.</p>
+                </div>
+                <div class="bg-darkbg/80 backdrop-blur p-6 rounded-2xl border border-gray-800 hover:border-gold-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-truck-fast"></i></div>
+                    <h3 class="font-bold text-white text-base mb-1.5">Hızlı Gönderim</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Siparişleriniz gecikmeden aynı gün veya ertesi gün kargoya teslim edilir.</p>
+                </div>
+                <div class="bg-darkbg/80 backdrop-blur p-6 rounded-2xl border border-gray-800 hover:border-gold-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="font-bold text-white text-base mb-1.5">%100 Güvence</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Dolap ve Gardrops güvencesiyle ödemeniz onayınız sonrasında hesabınıza geçer.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. GERÇEK MÜŞTERİ YORUMLARI -->
+        <section id="yorumlar" class="space-y-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-800/80 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white flex items-center gap-2.5">
+                        <i class="fa-solid fa-star text-gold-400"></i> Gerçek Müşteri Değerlendirmeleri
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Onaylı Mağazalarımızdan Alıcı Yorumları</p>
+                </div>
+                <div class="flex items-center gap-3 bg-cardbg border border-gold-500/30 px-5 py-2.5 rounded-2xl shadow-lg">
+                    <span class="text-3xl font-black text-gold-400">5.0</span>
+                    <div class="text-left text-xs">
+                        <div class="flex text-gold-400 gap-0.5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <span class="text-gray-300 font-bold">%100 Tam Puan</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Yorum 1 -->
+                <div class="bg-cardbg border border-gray-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between hover:border-gold-500/40 transition-all">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gold-400 font-bold bg-gold-500/10 px-2.5 py-1 rounded-md border border-gold-500/20">Turbox Bilgisayar Bileşeni</span>
+                            <div class="flex text-gold-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        </div>
+                        <p class="text-sm text-gray-300 italic leading-relaxed">"Değerli kardeşim kargon geldi. Mağdur etmemek adına hemen siparişi onayladım. İlgine ve özenine çok teşekkür ederim, helal olsun."</p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-800 text-xs bg-darkbg/50 p-3 rounded-xl">
+                        <span class="text-gold-400 font-bold">Satıcı Yanıtı:</span>
+                        <p class="text-gray-400 mt-1">"Hayırlı olsun! Güzel düşünceniz için teşekkür ederiz. Bir sorunuz olursa her zaman yazabilirsiniz."</p>
+                    </div>
+                </div>
+
+                <!-- Yorum 2 -->
+                <div class="bg-cardbg border border-gray-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between hover:border-gold-500/40 transition-all">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gold-400 font-bold bg-gold-500/10 px-2.5 py-1 rounded-md border border-gold-500/20">Turbox Anakart / SSD</span>
+                            <div class="flex text-gold-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        </div>
+                        <p class="text-sm text-gray-300 italic leading-relaxed">"Kargom sorunsuz şekilde ulaştı. Yanında gönderdiğiniz şeker hediyesi için de ayrıca teşekkür ederim, çok ince bir düşünce! :)"</p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-800 text-xs bg-darkbg/50 p-3 rounded-xl">
+                        <span class="text-gold-400 font-bold">Satıcı Yanıtı:</span>
+                        <p class="text-gray-400 mt-1">"Güzel yorumunuz ve tercihiniz için teşekkürler! Keyifle kullanmanız dileğiyle."</p>
+                    </div>
+                </div>
+
+                <!-- Yorum 3 -->
+                <div class="bg-cardbg border border-gray-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between hover:border-gold-500/40 transition-all">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-gold-400 font-bold bg-gold-500/10 px-2.5 py-1 rounded-md border border-gold-500/20">Gigabyte Donanım Ürünü</span>
+                            <div class="flex text-gold-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        </div>
+                        <p class="text-sm text-gray-300 italic leading-relaxed">"Paketleme harikaydı, ürün tam anlatıldığı gibi hızlıca elime ulaştı. Çok teşekkürler!"</p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-800 text-xs bg-darkbg/50 p-3 rounded-xl">
+                        <span class="text-gold-400 font-bold">Satıcı Yanıtı:</span>
+                        <p class="text-gray-400 mt-1">"Bizi tercih ettiğiniz için teşekkür ederiz! 🙏🥰"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. S.S.S. (SIKÇA SORULAN SORULAR) -->
+        <section id="sss" class="space-y-6">
+            <div class="border-b border-gray-800/80 pb-4">
+                <h2 class="text-2xl font-black text-white flex items-center gap-2.5">
+                    <i class="fa-solid fa-circle-question text-gold-400"></i> Sıkça Sorulan Sorular
+                </h2>
+                <p class="text-xs text-gray-400 mt-0.5">Aklınıza takılan tüm soruların yanıtları</p>
+            </div>
+
+            <div class="space-y-4 max-w-4xl mx-auto">
+                <details class="bg-cardbg border border-gray-800 rounded-2xl p-5 group shadow-md transition-all">
+                    <summary class="font-bold text-white cursor-pointer flex justify-between items-center text-sm">
+                        Siparişimi nereden ve nasıl satın alabilirim?
+                        <i class="fa-solid fa-chevron-down text-gold-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="text-xs text-gray-400 mt-3 leading-relaxed border-t border-gray-800 pt-3">
+                        Ürünlerimizi sitemiz üzerinden sepete ekleyebilir ya da resmi **Dolap** ve **Gardrops** mağazalarımız üzerinden %100 güvenceli olarak tek tıkla satın alabilirsiniz.
+                    </p>
+                </details>
+
+                <details class="bg-cardbg border border-gray-800 rounded-2xl p-5 group shadow-md transition-all">
+                    <summary class="font-bold text-white cursor-pointer flex justify-between items-center text-sm">
+                        Kargolama ne kadar sürüyor?
+                        <i class="fa-solid fa-chevron-down text-gold-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="text-xs text-gray-400 mt-3 leading-relaxed border-t border-gray-800 pt-3">
+                        Siparişleriniz genellikle aynı gün veya en geç 24 saat içinde darbelere karşı korunaklı ambalajlar ve hediyeleriyle birlikte kargoya teslim edilmektedir.
+                    </p>
+                </details>
+
+                <details class="bg-cardbg border border-gray-800 rounded-2xl p-5 group shadow-md transition-all">
+                    <summary class="font-bold text-white cursor-pointer flex justify-between items-center text-sm">
+                        İade ve değişim imkanınız var mı?
+                        <i class="fa-solid fa-chevron-down text-gold-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <p class="text-xs text-gray-400 mt-3 leading-relaxed border-t border-gray-800 pt-3">
+                        Evet, pazar yeri kuralları çerçevesinde ürün açıklamasında belirtilen şartlar haricinde herhangi bir problem yaşamanız halinde iade ve destek hakkınız bulunmaktadır.
+                    </p>
+                </details>
+            </div>
+        </section>
+
+        <!-- MAĞAZALARA YÖNLENDİRME BANNERI -->
+        <section class="bg-gradient-to-r from-cardbg via-[#16161D] to-cardbg border border-gold-500/40 rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-gold-500/5 pointer-events-none"></div>
+            <h3 class="text-2xl sm:text-3xl font-black text-white relative z-10">Resmi Mağazalarımızı Hemen Ziyaret Edin</h3>
+            <p class="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto relative z-10">Tüm değerlendirmelerimizi görmek ve güvenle alışveriş yapmak için pazaryeri profillerimize göz atabilirsiniz.</p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 relative z-10">
+                <a href="https://dolap.com/profil/technosepetim" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-gold-500/20 transform hover:-translate-y-0.5">
+                    DOLAP MAĞAZAMIZ (5.0 ★)
+                </a>
+                <a href="https://www.gardrops.com/technosepetim" target="_blank" class="w-full sm:w-auto bg-darkbg border border-gold-500/40 text-gold-400 hover:bg-gray-900 font-extrabold px-8 py-3.5 rounded-xl text-sm transition-all transform hover:-translate-y-0.5">
+                    GARDROPS MAĞAZAMIZ
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ADMIN GİRİŞ MODALI -->
+    <div id="adminAuthModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeAdminAuth()"></div>
+        <div class="relative bg-cardbg border border-gold-500/40 rounded-3xl max-w-sm w-full p-6 sm:p-8 z-10 space-y-5 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-gold-400"></i> Admin Girişi
+                </h3>
+                <button onclick="closeAdminAuth()" class="text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">E-Posta</label>
+                    <input type="email" id="adminEmail" required placeholder="alikaanblc@gmail.com" class="w-full bg-darkbg border border-gray-800 rounded-xl p-3 text-xs text-white focus:border-gold-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Şifre</label>
+                    <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-darkbg border border-gray-800 rounded-xl p-3 text-xs text-white focus:border-gold-400 outline-none">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-extrabold py-3.5 rounded-xl transition-all shadow-lg shadow-gold-500/20 text-xs">
+                    Giriş Yap
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN YÖNETİM PANELİ (DASHBOARD) -->
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeAdminDashboard()"></div>
+        <div class="relative bg-cardbg border border-gold-500/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 z-10 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            
+            <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gold-500/10 text-gold-400 flex items-center justify-center text-lg font-bold border border-gold-500/20">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-white text-base">Techno Sepetim Yönetim Paneli</h3>
+                        <p class="text-xs text-gold-400 font-medium">alikaanblc@gmail.com olarak oturum açıldı</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Yeni Ürün Ekle -->
+            <div class="bg-darkbg border border-gray-800 p-5 rounded-2xl space-y-4">
+                <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-gold-400"></i> Yeni Ürün Ekle
+                </h4>
+                <form onsubmit="handleAddProduct(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" id="pName" placeholder="Ürün Adı" required class="bg-cardbg border border-gray-800 rounded-xl p-3 text-xs text-white focus:border-gold-400 outline-none">
+                    <input type="number" id="pPrice" placeholder="Fiyat (TL)" step="0.01" required class="bg-cardbg border border-gray-800 rounded-xl p-3 text-xs text-white focus:border-gold-400 outline-none">
+                    <input type="url" id="pImage" placeholder="Görsel URL (İsteğe bağlı)" class="bg-cardbg border border-gray-800 rounded-xl p-3 text-xs text-white focus:border-gold-400 outline-none">
+                    <input type="text" id="pDesc" placeholder="Kısa Açıklama" class="bg-cardbg border border-gray-800 rounded-xl p-3 text-xs text-white focus:border-gold-400 outline-none">
+                    <button type="submit" class="sm:col-span-2 bg-gold-400 hover:bg-gold-300 text-black font-extrabold py-3 rounded-xl transition-all text-xs shadow-md">
+                        Vitrine Ürün Ekle
+                    </button>
+                </form>
+            </div>
+
+            <!-- Ürün Yönetim Listesi -->
+            <div class="space-y-3">
+                <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-gold-400"></i> Kayıtlı Ürünleri Yönet (<span id="adminProductCount">0</span>)
+                </h4>
+                <div id="adminProductList" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-4 flex justify-between items-center">
+                <button onclick="logoutAdmin()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors">
+                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap
+                </button>
+                <button onclick="closeAdminDashboard()" class="bg-cardbg hover:bg-gray-800 text-gray-300 px-5 py-2.5 rounded-xl text-xs font-semibold transition-colors">
+                    Kapat
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SEPET DRAWERS -->
+    <div id="cartDrawer" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="toggleCartDrawer()"></div>
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-cardbg border-l border-gold-500/20 flex flex-col p-6 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                    <h3 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping text-gold-400"></i> Alışveriş Sepetiniz
+                    </h3>
+                    <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="cartItemsList" class="flex-1 overflow-y-auto py-4 space-y-3"></div>
+                <div class="border-t border-gray-800 pt-4 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400 text-xs">Toplam Tutar:</span>
+                        <span id="cartTotalPrice" class="text-2xl font-black text-gold-400">0.00 TL</span>
+                    </div>
+                    <button onclick="checkout()" class="w-full bg-gradient-to-r from-gold-500 to-gold-600 text-black font-extrabold py-3.5 rounded-xl hover:from-gold-400 hover:to-gold-500 transition-all text-xs shadow-lg shadow-gold-500/20">
+                        Siparişi Tamamla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#050507] border-t border-gray-800/80 py-10 text-center text-xs text-gray-500 space-y-3">
+        <div class="flex justify-center items-center gap-2 text-gold-400 font-bold">
+            <i class="fa-solid fa-gem"></i> Techno Sepetim - Teknoloji & Giyim
+        </div>
+        <p>&copy; 2026 Tüm Hakları Saklıdır.</p>
+        <p class="text-gray-600">Dolap & Gardrops Onaylı Güvenilir Satıcı</p>
+    </footer>
+
+    <!-- JAVASCRIPT MANTIĞI -->
+    <script>
+        let products = JSON.parse(localStorage.getItem('techno_products')) || [];
+        let cart = JSON.parse(localStorage.getItem('techno_cart')) || [];
+        let isAdminLoggedIn = localStorage.getItem('techno_admin_logged') === 'true';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(products);
+            updateCartUI();
+        });
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        function renderProducts(listToRender) {
+            const grid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countEl = document.getElementById('productCount');
+            grid.innerHTML = '';
+            countEl.innerText = listToRender.length;
+
+            if (listToRender.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            listToRender.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'bg-cardbg border border-gray-800 rounded-2xl p-4 flex flex-col justify-between hover:border-gold-500/50 transition-all duration-300 group shadow-lg';
+                card.innerHTML = `
+                    <div>
+                        <div class="w-full h-48 bg-darkbg rounded-xl overflow-hidden mb-3 relative">
+                            <img src="${p.image || 'https://via.placeholder.com/300x300/121216/FFD700?text=TechnoSepetim'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-white text-sm mb-1 line-clamp-1">${p.name}</h3>
+                        <p class="text-xs text-gray-400 line-clamp-2">${p.desc || 'Açıklama girilmedi.'}</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-800">
+                        <span class="text-base font-extrabold text-gold-400">${Number(p.price).toLocaleString('tr-TR')} TL</span>
+                        <button onclick="addToCart(${p.id})" class="bg-gold-500/10 hover:bg-gold-400 text-gold-400 hover:text-black p-2.5 rounded-xl transition-colors font-medium">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterProducts(query) {
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || (p.desc && p.desc.toLowerCase().includes(query.toLowerCase())));
+            renderProducts(filtered);
+        }
+
+        // Admin Giriş ve Kontrolleri
+        function openAdminAuth() {
+            if (isAdminLoggedIn) {
+                openAdminDashboard();
+            } else {
+                document.getElementById('adminAuthModal').classList.remove('hidden');
+            }
+        }
+        function closeAdminAuth() { document.getElementById('adminAuthModal').classList.add('hidden'); }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPassword').value.trim();
+
+            if (email === 'alikaanblc@gmail.com' && pass === '00110011') {
+                isAdminLoggedIn = true;
+                localStorage.setItem('techno_admin_logged', 'true');
+                closeAdminAuth();
+                openAdminDashboard();
+                showToast('Admin paneline başarıyla giriş yapıldı!');
+            } else {
+                alert('Hatalı E-posta veya Şifre! Lütfen kontrol ediniz.');
+            }
+        }
+
+        function openAdminDashboard() {
+            document.getElementById('adminDashboardModal').classList.remove('hidden');
+            renderAdminProductList();
+        }
+        function closeAdminDashboard() { document.getElementById('adminDashboardModal').classList.add('hidden'); }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            localStorage.removeItem('techno_admin_logged');
+            closeAdminDashboard();
+            showToast('Admin oturumu kapatıldı.');
+        }
+
+        // Ürün Ekle / Sil
+        function handleAddProduct(e) {
+            e.preventDefault();
+            const newProduct = {
+                id: Date.now(),
+                name: document.getElementById('pName').value,
+                price: parseFloat(document.getElementById('pPrice').value),
+                image: document.getElementById('pImage').value,
+                desc: document.getElementById('pDesc').value
+            };
+            products.push(newProduct);
+            localStorage.setItem('techno_products', JSON.stringify(products));
+            e.target.reset();
+            renderProducts(products);
+            renderAdminProductList();
+            showToast('Yeni ürün başarıyla eklendi!');
+        }
+
+        function renderAdminProductList() {
+            const list = document.getElementById('adminProductList');
+            const countEl = document.getElementById('adminProductCount');
+            list.innerHTML = '';
+            countEl.innerText = products.length;
+
+            if (products.length === 0) {
+                list.innerHTML = '<p class="text-xs text-gray-500 text-center py-4">Kayıtlı ürün bulunmuyor.</p>';
+                return;
+            }
+
+            products.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between bg-darkbg p-3 rounded-xl border border-gray-800 text-xs';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${p.image || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-lg object-cover">
+                        <div>
+                            <h5 class="font-bold text-white">${p.name}</h5>
+                            <span class="text-gold-400 font-semibold">${p.price} TL</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteProduct(${p.id})" class="text-red-400 hover:text-red-300 p-2"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function deleteProduct(id) {
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('techno_products', JSON.stringify(products));
+            renderProducts(products);
+            renderAdminProductList();
+            showToast('Ürün silindi.');
+        }
+
+        // Sepet Mantığı
+        function toggleCartDrawer() { document.getElementById('cartDrawer').classList.toggle('hidden'); }
+
+        function addToCart(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+            const exist = cart.find(item => item.id === id);
+            if (exist) { exist.quantity += 1; } else { cart.push({ ...p, quantity: 1 }); }
+            saveCart();
+            toggleCartDrawer();
+            showToast('Ürün sepete eklendi!');
+        }
+
+        function saveCart() {
+            localStorage.setItem('techno_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartItemsList');
+            const badge = document.getElementById('cartBadge');
+            const totalEl = document.getElementById('cartTotalPrice');
+            
+            badge.innerText = cart.reduce((s, i) => s + i.quantity, 0);
+            list.innerHTML = '';
+
+            if(cart.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-500 py-12 text-xs">Sepetiniz şu an boş.</p>';
+                totalEl.innerText = '0.00 TL';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach(i => {
+                total += i.price * i.quantity;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-darkbg p-3.5 rounded-xl border border-gray-800 text-xs';
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-white">${i.name}</h4>
+                        <span class="text-gold-400 font-semibold">${i.price} TL x ${i.quantity}</span>
+                    </div>
+                    <button onclick="removeFromCart(${i.id})" class="text-red-400 hover:text-red-300 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                `;
+                list.appendChild(div);
+            });
+            totalEl.innerText = total.toLocaleString('tr-TR') + ' TL';
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            saveCart();
+        }
+
+        function checkout() {
+            if(cart.length === 0) return alert('Sepetiniz boş!');
+            alert('Siparişiniz başarıyla alındı! Teşekkür ederiz. Dolap veya Gardrops mağazalarımız üzerinden de siparişinizi tamamlayabilirsiniz.');
+            cart = [];
+            saveCart();
+            toggleCartDrawer();
+        }
+    </script>
+</body>
+</html>
